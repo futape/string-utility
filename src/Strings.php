@@ -139,4 +139,40 @@ abstract class Strings
     {
         return preg_replace('/\s/', ' ', $value);
     }
+
+    /**
+     * Does an inverse substr()
+     *
+     * Instead of returning a substring defined by a start position and a length,
+     * this function returns the inverse part of the string, with the substring removed.
+     *
+     * @param string $value
+     * @param int $start
+     * @param int|null $length
+     * @param bool $multibyte
+     * @return string
+     */
+    public static function supstr(string $value, int $start, ?int $length = null, bool $multibyte = true): string
+    {
+        if ($multibyte) {
+            $substr = mb_substr($value, $start, $length);
+            $beginning = mb_substr($value, 0, $start);
+            $end = mb_substr($value, mb_strlen($beginning) + mb_strlen($substr));
+        } else {
+            if ($length !== null) {
+                $substr = substr($value, $start, $length);
+            } else {
+                $substr = substr($value, $start);
+            }
+            $substr = $substr === false ? '' : $substr;
+
+            $beginning = substr($value, 0, $start);
+            $beginning = $beginning === false ? '' : $beginning;
+
+            $end = substr($value, strlen($beginning) + strlen($substr));
+            $end = $end === false ? '' : $end;
+        }
+
+        return $beginning . $end;
+    }
 }

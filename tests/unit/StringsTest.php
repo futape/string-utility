@@ -83,4 +83,41 @@ class StringsTest extends TestCase
     {
         $this->assertEquals('Foo Bar Baz ', Strings::inline("Foo Bar\nBaz\t"));
     }
+
+    /**
+     * @dataProvider supstrDataProvider
+     *
+     * @param array $input
+     * @param string $expected
+     */
+    public function testSupstr(array $input, string $expected)
+    {
+        $this->assertEquals($expected, Strings::supstr(...$input));
+    }
+
+    public function supstrDataProvider(): array
+    {
+        return [
+            'Positive start and length' => [
+                ['FooBarBaz', 3, 3],
+                'FooBaz'
+            ],
+            'Positive start, no length' => [
+                ['FooBarBaz', 3],
+                'Foo'
+            ],
+            'Negative start, no length' => [
+                ['FooBarBaz', -3],
+                'FooBar'
+            ],
+            'Negative start, positive length' => [
+                ['FooBarBaz', -6, 3],
+                'FooBaz'
+            ],
+            'Positive start, negative length' => [
+                ['FooBarBaz', 3, -3],
+                'FooBaz'
+            ]
+        ];
+    }
 }
