@@ -99,36 +99,58 @@ abstract class Strings
      * Checks if a string starts with a specific string
      *
      * @param string $value
-     * @param string $start
+     * @param string|string[] $start
      * @param bool $ignoreCase
      * @return bool
      */
-    public static function startsWith(string $value, string $start, bool $ignoreCase = false): bool
+    public static function startsWith(string $value, $start, bool $ignoreCase = false): bool
     {
         if ($ignoreCase) {
             $value = mb_strtolower($value);
-            $start = mb_strtolower($start);
         }
 
-        return mb_substr($value, 0, mb_strlen($start)) == $start;
+        $start = is_array($start) ? $start : [$start];
+
+        foreach ($start as $val) {
+            if ($ignoreCase) {
+                $val = mb_strtolower($val);
+            }
+
+            if (mb_substr($value, 0, mb_strlen($val)) == $val) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
      * Checks if a string ends with a specific string
      *
      * @param string $value
-     * @param string $end
+     * @param string|string[] $end
      * @param bool $ignoreCase
      * @return bool
      */
-    public static function endsWith(string $value, string $end, bool $ignoreCase = false): bool
+    public static function endsWith(string $value, $end, bool $ignoreCase = false): bool
     {
         if ($ignoreCase) {
             $value = mb_strtolower($value);
-            $end = mb_strtolower($end);
         }
 
-        return mb_substr($value, -mb_strlen($end)) == $end;
+        $end = is_array($end) ? $end : [$end];
+
+        foreach ($end as $val) {
+            if ($ignoreCase) {
+                $val = mb_strtolower($val);
+            }
+
+            if (mb_substr($value, -mb_strlen($val)) == $val) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
