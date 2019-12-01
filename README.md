@@ -17,7 +17,7 @@ composer require futape/string-utility
 ```php
 use Futape\Utility\String\Strings;
 
-echo Strings::stripLeft('foobar', 'foo') // "bar"
+echo Strings::stripLeft('foobar', 'foo'); // "bar"
 ```
 
 ## Testing
