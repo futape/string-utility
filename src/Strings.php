@@ -197,4 +197,46 @@ abstract class Strings
 
         return $beginning . $end;
     }
+
+    /**
+     * @param array $values
+     * @param int $threshold
+     * @return string
+     */
+    public static function createSeries(array $values, int $threshold = 3): string
+    {
+        array_walk(
+            $values,
+            function (&$val) {
+                $val = (int)$val;
+            }
+        );
+        $values = array_unique($values);
+        sort($values);
+
+        $threshold = max($threshold, 2);
+        $series = [];
+
+        for ($i = 0; $i < count($values); $i++) {
+            $value = $values[$i];
+            $consecutiveValue = $value;
+
+            for ($y = $i + 1; $y < count($values); $y++) {
+                if ($values[$y] == $consecutiveValue + 1) {
+                    $consecutiveValue = $values[$y];
+                } else {
+                    break;
+                }
+            }
+
+            if ($consecutiveValue >= $value + $threshold - 1) {
+                $series[] = $value . ' - ' . $consecutiveValue;
+                $i += $consecutiveValue - $value;
+            } else {
+                $series[] = $value;
+            }
+        }
+
+        return implode(', ', $series);
+    }
 }

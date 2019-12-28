@@ -120,4 +120,49 @@ class StringsTest extends TestCase
             ]
         ];
     }
+
+    /**
+     * @dataProvider createSeriesDataProvider
+     *
+     * @param array $input
+     * @param string $expected
+     */
+    public function testCreateSeries(array $input, string $expected)
+    {
+        $this->assertEquals($expected, Strings::createSeries(...$input));
+    }
+
+    public function createSeriesDataProvider(): array
+    {
+        return [
+            'Basic' => [
+                [[4, 9, 1, 6, 2, 7, 5]],
+                '1, 2, 4 - 7, 9'
+            ],
+            'Minimal threshold' => [
+                [[4, 9, 1, 6, 2, 7, 5], 2],
+                '1 - 2, 4 - 7, 9'
+            ],
+            'Too low threshold' => [
+                [[4, 9, 1, 6, 2, 7, 5], 1],
+                '1 - 2, 4 - 7, 9'
+            ],
+            'Increased threshold' => [
+                [[4, 9, 6, 11, 7, 5, 10], 4],
+                '4 - 7, 9, 10, 11'
+            ],
+            'No series due to too high threshold' => [
+                [[4, 9, 6, 11, 7, 5, 10], 5],
+                '4, 5, 6, 7, 9, 10, 11'
+            ],
+            'Negative numbers' => [
+                [[-5, 1, 4, -1, -6, 0, -4, 2]],
+                '-6 - -4, -1 - 2, 4'
+            ],
+            'Cast values to integers and eliminate duplicate numbers' => [
+                [[null, true, false, '']],
+                '0, 1'
+            ]
+        ];
+    }
 }
