@@ -4,6 +4,8 @@
 namespace Futape\Utility\String;
 
 
+use Futape\Utility\ArrayUtility\Arrays;
+
 abstract class Strings
 {
     /**
@@ -208,34 +210,69 @@ abstract class Strings
         array_walk(
             $values,
             function (&$val) {
-                $val = (int)$val;
+                if (!is_int($val)) {
+                    $val = mb_substr((string)$val, 0, 1);
+                }
             }
         );
-        $values = array_unique($values);
-        sort($values);
+        $values = array_filter(
+            Arrays::unique($values, Arrays::UNIQUE_STRICT),
+            function ($val) {
+                return $val !== '';
+            }
+        );
+        usort(
+            $values,
+            function ($a, $b) {
+                if (is_int($a) && is_int($b)) {
+                    return $a - $b;
+                }
+                if (is_int($a)) {
+                    return -1;
+                }
+                if (is_int($b)) {
+                    return 1;
+                }
+
+                return mb_ord($a) - mb_ord($b);
+            }
+        );
 
         $threshold = max($threshold, 2);
         $series = [];
 
         for ($i = 0; $i < count($values); $i++) {
-            $value = $values[$i];
-            $consecutiveValue = $value;
+            $originalValue = $values[$i];
+            $value = is_int($originalValue) ? $originalValue : mb_ord($originalValue);
+            $seriesEnd = $value;
 
             for ($y = $i + 1; $y < count($values); $y++) {
-                if ($values[$y] == $consecutiveValue + 1) {
-                    $consecutiveValue = $values[$y];
+                if (is_int($originalValue) != is_int($values[$y])) {
+                    break;
+                }
+
+                $consecutiveValue = is_int($values[$y]) ? $values[$y] : mb_ord($values[$y]);
+
+                if ($consecutiveValue == $seriesEnd + 1) {
+                    $seriesEnd = $consecutiveValue;
                 } else {
                     break;
                 }
             }
 
-            if ($consecutiveValue >= $value + $threshold - 1) {
-                $series[] = $value . ' - ' . $consecutiveValue;
-                $i += $consecutiveValue - $value;
+            if ($seriesEnd >= $value + $threshold - 1) {
+                if (is_int($originalValue)) {
+                    $series[] = $originalValue . ' - ' . $seriesEnd;
+                } else {
+                    $series[] = $originalValue . ' - ' . mb_chr($seriesEnd);
+                }
+                $i += $seriesEnd - $value;
             } else {
-                $series[] = $value;
+                $series[] = $originalValue;
             }
         }
+
+        var_dump(implode(', ', $series));
 
         return implode(', ', $series);
     }

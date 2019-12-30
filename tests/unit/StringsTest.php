@@ -159,9 +159,13 @@ class StringsTest extends TestCase
                 [[-5, 1, 4, -1, -6, 0, -4, 2]],
                 '-6 - -4, -1 - 2, 4'
             ],
-            'Cast values to integers and eliminate duplicate numbers' => [
-                [[null, true, false, '']],
-                '0, 1'
+            'Cast values to strings and eliminate empty strings' => [
+                [[null, true, false]],
+                '1'
+            ],
+            'Characters' => [
+                [[1, 'D', 'C', 'b', 3, 2, 'A', 'B', 'a', 5, 'chi', 'epsilon']],
+                '1 - 3, 5, A - D, a - c, e'
             ]
         ];
     }
